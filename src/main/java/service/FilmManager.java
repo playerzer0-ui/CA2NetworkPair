@@ -73,11 +73,11 @@ public class FilmManager {
         return films.add(film);
     }
 
-    public boolean removeFilm(Film film){
+    public boolean removeFilm(String title){
         if(films.isEmpty()){
             return false;
         }
 
-        return films.remove(film);
+        return films.remove(new Film(title));
     }
 }

@@ -33,7 +33,6 @@ class FilmManagerTest {
         listFilm.add(new Film("cyberpunk", genres2, 2, 9));
         listFilm.add(new Film("spongebob", genres3, 1, 100));
         filmManager = new FilmManager(listFilm);
-        System.out.println(filmManager.getFilms());
     }
 
     @AfterEach
@@ -118,15 +117,83 @@ class FilmManagerTest {
     }
 
     @Test
-    void rateFilm() {
+    void rateFilm_normal() {
+        boolean exp = true;
+        boolean act = filmManager.rateFilm("dark souls", 3);
+        Film film = filmManager.searchByTitle("dark souls");
 
+        assertEquals(exp, act);
+        assertEquals(7, film.getTotalRating());
     }
 
     @Test
-    void addFilm() {
+    void rateFilm_negative_rating() {
+        boolean exp = false;
+        boolean act = filmManager.rateFilm("dark souls", -3);
+        Film film = filmManager.searchByTitle("dark souls");
+
+        assertEquals(exp, act);
+        assertEquals(4, film.getTotalRating());
     }
 
     @Test
-    void removeFilm() {
+    void rateFilm_not_found() {
+        boolean exp = false;
+        boolean act = filmManager.rateFilm("light souls", 3);
+
+        assertEquals(exp, act);
+    }
+
+    @Test
+    void rateFilm_empty() {
+        filmManager = new FilmManager();
+        boolean exp = false;
+        boolean act = filmManager.rateFilm("dark souls", 3);
+
+        assertEquals(exp, act);
+    }
+
+    @Test
+    void addFilm_normal() {
+        boolean exp = true;
+        boolean act = filmManager.addFilm(new Film("shoo", genres1, 3, 3));
+
+        assertEquals(exp, act);
+        assertEquals(4, filmManager.getFilms().size());
+    }
+
+    @Test
+    void addFilm_same_title() {
+        boolean exp = false;
+        boolean act = filmManager.addFilm(new Film("dark souls", genres1, 3, 3));
+
+        assertEquals(exp, act);
+        assertEquals(3, filmManager.getFilms().size());
+    }
+
+    @Test
+    void removeFilm_normal() {
+        boolean exp = true;
+        boolean act = filmManager.removeFilm("dark souls");
+
+        assertEquals(exp, act);
+        assertEquals(2, filmManager.getFilms().size());
+    }
+
+    @Test
+    void removeFilm_not_found() {
+        boolean exp = false;
+        boolean act = filmManager.removeFilm("blight souls");
+
+        assertEquals(exp, act);
+    }
+
+    @Test
+    void removeFilm_empty() {
+        filmManager = new FilmManager();
+        boolean exp = false;
+        boolean act = filmManager.removeFilm("dark souls");
+
+        assertEquals(exp, act);
     }
 }
