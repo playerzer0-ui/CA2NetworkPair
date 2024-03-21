@@ -65,7 +65,6 @@ class FilmManagerTest {
 
     @Test
     void searchByTitle_not_found(){
-        Film exp = null;
         Film act = filmManager.searchByTitle("lord of fries");
 
         assertNull(act);
@@ -74,7 +73,6 @@ class FilmManagerTest {
     @Test
     void searchByTitle_empty(){
         filmManager = new FilmManager();
-        Film exp = null;
         Film act = filmManager.searchByTitle("spongebob");
 
         assertNull(act);
