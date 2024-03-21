@@ -63,5 +63,19 @@ public class FilmManager {
         return true;
     }
 
+    public boolean addFilm(Film film){
+        if(films.contains(film)){
+            return false;
+        }
 
+        return films.add(film);
+    }
+
+    public boolean removeFilm(Film film){
+        if(films.isEmpty()){
+            return false;
+        }
+
+        return films.remove(film);
+    }
 }
