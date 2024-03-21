@@ -46,6 +46,7 @@ public class FilmManager {
             if(!retain.isEmpty()){
                 filteredFilms.add(f);
             }
+            retain.clear();
         }
 
         return filteredFilms;
