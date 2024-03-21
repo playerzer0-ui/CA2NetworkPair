@@ -54,11 +54,12 @@ public class FilmManager {
 
     public boolean rateFilm(String title, int rating){
         Film film = searchByTitle(title);
-        if(film == null){
+        if(film == null || rating <= 0){
             return false;
         }
 
         film.setRateCount(film.getRateCount() + 1);
+        film.setTotalRating(film.getTotalRating() + rating);
         films.set(films.indexOf(film), film);
 
         return true;

@@ -29,9 +29,9 @@ class FilmManagerTest {
         genres3.add("romance");
         genres3.add("comedy");
 
-        listFilm.add(new Film("dark souls", genres1, 4.1, 2));
-        listFilm.add(new Film("cyberpunk", genres2, 2.1, 9));
-        listFilm.add(new Film("spongebob", genres3, 1.5, 100));
+        listFilm.add(new Film("dark souls", genres1, 4, 2));
+        listFilm.add(new Film("cyberpunk", genres2, 2, 9));
+        listFilm.add(new Film("spongebob", genres3, 1, 100));
         filmManager = new FilmManager(listFilm);
         System.out.println(filmManager.getFilms());
     }
@@ -50,15 +50,15 @@ class FilmManagerTest {
         genres1.add("romance");
         genres1.add("comedy");
 
-        listFilm.add(new Film("dark souls", genres1, 4.1, 2));
-        listFilm.add(new Film("cyberpunk", genres2, 2.1, 9));
-        listFilm.add(new Film("spongebob", genres3, 1.5, 100));
+        listFilm.add(new Film("dark souls", genres1, 4, 2));
+        listFilm.add(new Film("cyberpunk", genres2, 2, 9));
+        listFilm.add(new Film("spongebob", genres3, 1, 100));
         filmManager = new FilmManager(listFilm);
     }
 
     @Test
     void searchByTitle_normal() {
-        Film exp = new Film("cyberpunk", genres2, 2.1, 9);
+        Film exp = new Film("cyberpunk", genres2, 2, 9);
         Film act = filmManager.searchByTitle("cyberpunk");
 
         assertEquals(exp, act);
@@ -84,8 +84,8 @@ class FilmManagerTest {
     @Test
     void searchByGenre_normal() {
         List<Film> exp = new ArrayList<>();
-        exp.add(new Film("dark souls", genres1, 4.1, 2));
-        exp.add(new Film("cyberpunk", genres2, 2.1, 9));
+        exp.add(new Film("dark souls", genres1, 4, 2));
+        exp.add(new Film("cyberpunk", genres2, 2, 9));
 
         ArrayList<String> genres = new ArrayList<>();
         genres.add("horror");

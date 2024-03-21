@@ -5,13 +5,13 @@ import java.util.ArrayList;
 public class Film {
     private String title;
     private ArrayList<String> genres;
-    private double ratings;
+    private int totalRating;
     private int rateCount;
 
-    public Film(String title, ArrayList<String> genres, double ratings, int rateCount) {
+    public Film(String title, ArrayList<String> genres, int totalRating, int rateCount) {
         this.title = title;
         this.genres = genres;
-        this.ratings = ratings;
+        this.totalRating = totalRating;
         this.rateCount = rateCount;
     }
 
@@ -37,12 +37,12 @@ public class Film {
         this.genres = genres;
     }
 
-    public double getRatings() {
-        return ratings;
+    public int getTotalRating() {
+        return totalRating;
     }
 
-    public void setRatings(double ratings) {
-        this.ratings = ratings;
+    public void setTotalRating(int totalRating) {
+        this.totalRating = totalRating;
     }
 
     public int getRateCount() {
@@ -73,7 +73,7 @@ public class Film {
         return "Film{" +
                 "title='" + title + '\'' +
                 ", Genre=" + genres +
-                ", ratings=" + ratings +
+                ", totalRating=" + totalRating +
                 ", rateCount=" + rateCount +
                 '}';
     }
