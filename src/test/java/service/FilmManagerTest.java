@@ -12,26 +12,14 @@ import java.util.List;
 class FilmManagerTest {
 
     private FilmManager filmManager;
-    private ArrayList<String> genres1;
-    private ArrayList<String> genres2;
-    private ArrayList<String> genres3;
+
     @BeforeEach
     public void init() {
         ArrayList<Film> listFilm = new ArrayList<>();
 
-        genres1 = new ArrayList<>();
-        genres1.add("comedy");
-        genres1.add("horror");
-        genres2 = new ArrayList<>();
-        genres2.add("sci-fi");
-        genres2.add("horror");
-        genres3 = new ArrayList<>();
-        genres3.add("romance");
-        genres3.add("comedy");
-
-        listFilm.add(new Film("dark souls", genres1, 4, 2));
-        listFilm.add(new Film("cyberpunk", genres2, 2, 9));
-        listFilm.add(new Film("spongebob", genres3, 1, 100));
+        listFilm.add(new Film("dark souls", "comedy", 4, 2));
+        listFilm.add(new Film("cyberpunk", "horror", 2, 9));
+        listFilm.add(new Film("spongebob", "sci-fi", 1, 100));
         filmManager = new FilmManager(listFilm);
     }
 
@@ -39,19 +27,9 @@ class FilmManagerTest {
     public void teardown() {
         ArrayList<Film> listFilm = new ArrayList<>();
 
-        genres1 = new ArrayList<>();
-        genres1.add("comedy");
-        genres1.add("horror");
-        genres2 = new ArrayList<>();
-        genres1.add("sci-fi");
-        genres1.add("horror");
-        genres3 = new ArrayList<>();
-        genres1.add("romance");
-        genres1.add("comedy");
-
-        listFilm.add(new Film("dark souls", genres1, 4, 2));
-        listFilm.add(new Film("cyberpunk", genres2, 2, 9));
-        listFilm.add(new Film("spongebob", genres3, 1, 100));
+        listFilm.add(new Film("dark souls", "comedy", 4, 2));
+        listFilm.add(new Film("cyberpunk", "horror", 2, 9));
+        listFilm.add(new Film("spongebob", "sci-fi", 1, 100));
         filmManager = new FilmManager(listFilm);
     }
 
@@ -60,7 +38,7 @@ class FilmManagerTest {
      */
     @Test
     void searchByTitle_normal() {
-        Film exp = new Film("cyberpunk", genres2, 2, 9);
+        Film exp = new Film("cyberpunk", "horror", 2, 9);
         Film act = filmManager.searchByTitle("cyberpunk");
 
         assertEquals(exp, act);
@@ -93,13 +71,10 @@ class FilmManagerTest {
     @Test
     void searchByGenre_normal() {
         List<Film> exp = new ArrayList<>();
-        exp.add(new Film("dark souls", genres1, 4, 2));
-        exp.add(new Film("cyberpunk", genres2, 2, 9));
+        exp.add(new Film("cyberpunk", "horror", 2, 9));
 
-        ArrayList<String> genres = new ArrayList<>();
-        genres.add("horror");
 
-        List<Film> act = filmManager.searchByGenre(genres);
+        List<Film> act = filmManager.searchByGenre("horror");
         assertEquals(exp, act);
     }
 
@@ -110,10 +85,7 @@ class FilmManagerTest {
     void searchByGenre_not_found() {
         List<Film> exp = new ArrayList<>();
 
-        ArrayList<String> genres = new ArrayList<>();
-        genres.add("sum ting wong");
-
-        List<Film> act = filmManager.searchByGenre(genres);
+        List<Film> act = filmManager.searchByGenre("romance");
         assertEquals(exp, act);
     }
 
@@ -125,10 +97,7 @@ class FilmManagerTest {
         filmManager = new FilmManager();
         List<Film> exp = new ArrayList<>();
 
-        ArrayList<String> genres = new ArrayList<>();
-        genres.add("sum ting wong");
-
-        List<Film> act = filmManager.searchByGenre(genres);
+        List<Film> act = filmManager.searchByGenre("horror");
         assertEquals(exp, act);
     }
 
@@ -200,7 +169,7 @@ class FilmManagerTest {
     @Test
     void addFilm_normal() {
         boolean exp = true;
-        boolean act = filmManager.addFilm(new Film("shoo", genres1, 3, 3));
+        boolean act = filmManager.addFilm(new Film("shoo", "bibs", 3, 3));
 
         assertEquals(exp, act);
         assertEquals(4, filmManager.getFilms().size());
@@ -212,7 +181,7 @@ class FilmManagerTest {
     @Test
     void addFilm_same_title() {
         boolean exp = false;
-        boolean act = filmManager.addFilm(new Film("dark souls", genres1, 3, 3));
+        boolean act = filmManager.addFilm(new Film("dark souls", "shooter", 3, 3));
 
         assertEquals(exp, act);
         assertEquals(3, filmManager.getFilms().size());

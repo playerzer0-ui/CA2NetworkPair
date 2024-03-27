@@ -51,22 +51,17 @@ public class FilmManager {
 
 
     /**
-     * search films by genres
-     * @param genres the list of genres
-     * @return a list of films by the genres or an empty list if none were found
+     * search films by genre
+     * @param genre the genre
+     * @return a list of films by the genre or an empty list if none were found
      */
-    public List<Film> searchByGenre(ArrayList<String> genres){
+    public List<Film> searchByGenre(String genre){
         List<Film> filteredFilms = new ArrayList<>();
-        List<String> retain = new ArrayList<>();
 
         for(Film f : films){
-            retain.addAll(f.getGenres());
-            retain.retainAll(genres);
-
-            if(!retain.isEmpty()){
+            if(f.getGenre().equals(genre)){
                 filteredFilms.add(f);
             }
-            retain.clear();
         }
 
         return filteredFilms;

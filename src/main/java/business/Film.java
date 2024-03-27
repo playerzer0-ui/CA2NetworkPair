@@ -4,13 +4,13 @@ import java.util.ArrayList;
 
 public class Film {
     private String title;
-    private ArrayList<String> genres;
+    private String genre;
     private int totalRating;
     private int rateCount;
 
-    public Film(String title, ArrayList<String> genres, int totalRating, int rateCount) {
+    public Film(String title, String genre, int totalRating, int rateCount) {
         this.title = title;
-        this.genres = genres;
+        this.genre = genre;
         this.totalRating = totalRating;
         this.rateCount = rateCount;
     }
@@ -29,12 +29,12 @@ public class Film {
         this.title = title;
     }
 
-    public ArrayList<String> getGenres() {
-        return genres;
+    public String getGenre() {
+        return genre;
     }
 
-    public void setGenres(ArrayList<String> genres) {
-        this.genres = genres;
+    public void setGenre(String genre) {
+        this.genre = genre;
     }
 
     public int getTotalRating() {
@@ -72,7 +72,7 @@ public class Film {
     public String toString() {
         return "Film{" +
                 "title='" + title + '\'' +
-                ", Genre=" + genres +
+                ", Genre=" + genre +
                 ", totalRating=" + totalRating +
                 ", rateCount=" + rateCount +
                 '}';
