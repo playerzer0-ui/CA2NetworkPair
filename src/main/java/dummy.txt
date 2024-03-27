@@ -5,10 +5,10 @@ searchByName%%blight souls
 - NO_MATCH_FOUND
 
 search by genre
-searchByGenre%%$sci-fi
+searchByGenre%%sci-fi
 - spongebob%%sci-fi%%1%%10~~gold%%sci-fi%%1%%10
-searchByGenre%%$comedy
+searchByGenre%%comedy
 - dark souls%%comedy%%4%%2
-searchByGenre%%$genre
+searchByGenre%%genre
 - NO_MATCH_FOUND
 

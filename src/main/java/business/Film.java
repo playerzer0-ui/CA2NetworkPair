@@ -70,7 +70,7 @@ public class Film {
 
     @Override
     public String toString() {
-        return title + TCProtocol.DELIMITER + genre + TCProtocol.DELIMITER + TCProtocol.DELIMITER
+        return title + TCProtocol.DELIMITER + genre + TCProtocol.DELIMITER
                 + totalRating + TCProtocol.DELIMITER + numRaters;
     }
 }
