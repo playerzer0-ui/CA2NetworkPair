@@ -20,6 +20,7 @@ public class ServerMovie {
     private static boolean serverOnline = true;
     public static void main(String[] args) {
         FilmManager filmManager = new FilmManager();
+        filmManager.setData();
         UserManager userManager = new UserManager();
         User user;
 
@@ -129,11 +130,11 @@ public class ServerMovie {
                                         }
                                     }
                                     else{
-                                        response = TCProtocol.NOT_LOGGED_IN;
+                                        response = TCProtocol.INSUFFICIENT;
                                     }
                                 }
                                 else{
-                                    response = TCProtocol.NO_MATCH_FOUND;
+                                    response = TCProtocol.INVALID;
                                 }
                                 break;
 
@@ -143,10 +144,10 @@ public class ServerMovie {
                                         if(user.isAdmin()){
                                             boolean succeed = filmManager.removeFilm(components[1]);
                                             if(succeed){
-                                                response = TCProtocol.ADDED;
+                                                response = TCProtocol.REMOVE;
                                             }
                                             else{
-                                                response = TCProtocol.EXISTS;
+                                                response = TCProtocol.NOT_FOUND;
                                             }
                                         }
                                         else{
@@ -154,11 +155,11 @@ public class ServerMovie {
                                         }
                                     }
                                     else{
-                                        response = TCProtocol.NOT_LOGGED_IN;
+                                        response = TCProtocol.INSUFFICIENT;
                                     }
                                 }
                                 else{
-                                    response = TCProtocol.NO_MATCH_FOUND;
+                                    response = TCProtocol.INVALID;
                                 }
                                 break;
 

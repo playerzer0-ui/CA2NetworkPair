@@ -15,6 +15,15 @@ public class FilmManager {
     public FilmManager() {
     }
 
+    /**
+     * set data for the server
+     */
+    public void setData(){
+        films.add(new Film("dark souls", "comedy", 4, 2));
+        films.add(new Film("cyberpunk", "horror", 2, 9));
+        films.add(new Film("spongebob", "sci-fi", 1, 10));
+        films.add(new Film("gold", "sci-fi", 1, 10));
+    }
 
     /**
      * get a list of films

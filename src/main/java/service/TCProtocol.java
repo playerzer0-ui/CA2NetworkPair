@@ -32,6 +32,7 @@ public class TCProtocol {
     public final static String REMOVE = "remove";
     public final static String SUCCESS = "SUCCESS";
     public final static String INVALID_RATING_SUPPLIED = "INVALID_RATING_SUPPLIED";
+    public final static String NOT_FOUND = "NOT_FOUND";
     public final static String NO_MATCH_FOUND = "NO_MATCH_FOUND";
     public final static String EXISTS = "EXISTS";
 
