@@ -12,3 +12,18 @@ searchByGenre%%comedy
 searchByGenre%%genre
 - NO_MATCH_FOUND
 
+register
+
+register%%newuser%%password123
+- ADDED
+register%%newuser%%password123
+- REJECTED (cause existed user already)
+
+login%%newuser%%password123
+- SUCCESS_USER
+login%%admin1%%adminPassword1
+- SUCCESS_ADMIN
+
+
+logout
+- LOGGED_OUT

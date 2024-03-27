@@ -18,6 +18,7 @@ import java.util.Scanner;
 
 public class ServerMovie {
     private static boolean serverOnline = true;
+    private static User currentUser = null;
     public static void main(String[] args) {
         FilmManager filmManager = new FilmManager();
         filmManager.setData();
@@ -41,6 +42,36 @@ public class ServerMovie {
                         String response = null;
 
                         switch (components[0]){
+
+                            case TCProtocol.REGISTER:
+                                if (components.length == 3) {
+                                    boolean added = userManager.addUser(new User(components[1], components[2], false));
+                                    response = added ? TCProtocol.ADDED : TCProtocol.REJECTED;
+                                } else {
+                                    response = TCProtocol.INVALID;
+                                }
+                                break;
+
+                            case TCProtocol.LOGIN:
+                                if (components.length == 3) {
+                                     user = userManager.searchByUsername(components[1]);
+                                    if (user != null && user.getPassword().equals(components[2])) {
+                                        currentUser = user;
+                                        response = user.isAdmin() ? TCProtocol.ADMIN : TCProtocol.USER;
+                                    } else {
+                                        response = TCProtocol.FAILED;
+                                    }
+                                } else {
+                                    response = TCProtocol.INVALID;
+                                }
+                                break;
+
+                            case TCProtocol.LOGOUT:
+                                currentUser = null;
+                                response = TCProtocol.LOGGED_OUT;
+                                break;
+
+
                             case TCProtocol.RATE:
                                 if(components.length == 3){
                                     if(user != null){
