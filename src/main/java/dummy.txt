@@ -19,6 +19,8 @@ searchByGenre%%
 rate film
 rate%%dark souls%%4
 - SUCCESS
+rate%%dark souls%%4
+- NOT_LOGGED_IN
 rate%%dark souls%%11
 - INVALID_RATING_SUPPLIED
 rate%%dark souls%%-1
