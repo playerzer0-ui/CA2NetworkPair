@@ -33,13 +33,6 @@ public class FilmManager {
         return films;
     }
 
-    /**
-     * set a list of films
-     */
-    public void setFilms(ArrayList<Film> films) {
-        this.films = films;
-    }
-
 
     /**
      * search a film by title

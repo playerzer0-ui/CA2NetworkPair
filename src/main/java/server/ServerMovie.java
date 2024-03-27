@@ -11,19 +11,16 @@ import java.io.PrintWriter;
 import java.net.BindException;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Scanner;
 
 public class ServerMovie {
     private static boolean serverOnline = true;
-    private static User currentUser = null;
+
     public static void main(String[] args) {
         FilmManager filmManager = new FilmManager();
         filmManager.setData();
         UserManager userManager = new UserManager();
-        User user;
 
         System.out.println("movie server online...");
         try(ServerSocket serverSocket = new ServerSocket(TCProtocol.PORT)){
@@ -31,7 +28,7 @@ public class ServerMovie {
             while(serverOnline){
                 Socket socket = serverSocket.accept();
                 boolean validSession = true;
-                user = null;
+                User user = null;
 
                 try(Scanner input = new Scanner(socket.getInputStream()); PrintWriter output = new PrintWriter(socket.getOutputStream())){
 
@@ -39,7 +36,7 @@ public class ServerMovie {
                         String request = input.nextLine();
                         System.out.println(request);
                         String[] components = request.split(TCProtocol.DELIMITER);
-                        String response = null;
+                        String response;
 
                         switch (components[0]){
 
@@ -54,9 +51,9 @@ public class ServerMovie {
 
                             case TCProtocol.LOGIN:
                                 if (components.length == 3) {
-                                     user = userManager.searchByUsername(components[1]);
-                                    if (user != null && user.getPassword().equals(components[2])) {
-                                        currentUser = user;
+                                     User u = userManager.searchByUsername(components[1]);
+                                    if (u != null && u.getPassword().equals(components[2])) {
+                                        user = u;
                                         response = user.isAdmin() ? TCProtocol.ADMIN : TCProtocol.USER;
                                     } else {
                                         response = TCProtocol.FAILED;
@@ -67,7 +64,7 @@ public class ServerMovie {
                                 break;
 
                             case TCProtocol.LOGOUT:
-                                currentUser = null;
+                                user = null;
                                 response = TCProtocol.LOGGED_OUT;
                                 break;
 
@@ -203,6 +200,7 @@ public class ServerMovie {
                                 if(user != null){
                                     if(user.isAdmin()){
                                         serverOnline = false;
+                                        validSession = false;
                                         response = TCProtocol.SHUTTING_DOWN;
                                     }
                                     else{

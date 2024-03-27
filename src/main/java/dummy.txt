@@ -3,6 +3,8 @@ searchByName%%dark souls
 - dark souls%%comedy%%4%%2
 searchByName%%blight souls
 - NO_MATCH_FOUND
+searchName%%
+- INVALID_REQUEST
 
 search by genre
 searchByGenre%%sci-fi
@@ -11,9 +13,35 @@ searchByGenre%%comedy
 - dark souls%%comedy%%4%%2
 searchByGenre%%genre
 - NO_MATCH_FOUND
+searchByGenre%%
+- INVALID_REQUEST
+
+rate film
+rate%%dark souls%%4
+- SUCCESS
+rate%%dark souls%%11
+- INVALID_RATING_SUPPLIED
+rate%%dark souls%%-1
+- INVALID_RATING_SUPPLIED
+rate%%asdsdads souls%%-1
+
+add film
+add%%blah%%romance
+- ADDED
+add%%blah%%romance
+- EXISTS
+add%%sdaa%%romance
+- INSUFFICIENT_PERMISSIONS
+
+remove film
+remove%%blah
+- REMOVED
+remove%%blah
+- NOT_FOUND
+remove%%dark souls
+- INSUFFICIENT_PERMISSIONS
 
 register
-
 register%%newuser%%password123
 - ADDED
 register%%newuser%%password123
@@ -24,6 +52,10 @@ login%%newuser%%password123
 login%%admin1%%adminPassword1
 - SUCCESS_ADMIN
 
-
 logout
 - LOGGED_OUT
+
+shutdown
+- SHUTDOWN
+shutdown (if not admin)
+- INSUFFICIENT_PERMISSIONS
