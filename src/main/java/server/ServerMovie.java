@@ -224,7 +224,7 @@ public class ServerMovie {
             }
         }
         catch (BindException e) {
-            System.out.println("BindException occurred when attempting to bind to port " + 12321);
+            System.out.println("BindException occurred when attempting to bind to port " + TCProtocol.PORT);
             System.out.println(e.getMessage());
         } catch (IOException e) {
             System.out.println("IOException occurred on server socket");
