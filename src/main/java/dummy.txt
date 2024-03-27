@@ -26,6 +26,7 @@ rate%%dark souls%%11
 rate%%dark souls%%-1
 - INVALID_RATING_SUPPLIED
 rate%%asdsdads souls%%-1
+- NO_MATCH_FOUND
 
 add film
 add%%blah%%romance

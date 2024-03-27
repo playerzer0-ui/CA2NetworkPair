@@ -16,6 +16,8 @@ import java.util.Scanner;
 
 public class ServerMovie {
     private static boolean serverOnline = true;
+    private static User user;
+    private static boolean validSession;
 
     public static void main(String[] args) {
         FilmManager filmManager = new FilmManager();
@@ -27,8 +29,8 @@ public class ServerMovie {
 
             while(serverOnline){
                 Socket socket = serverSocket.accept();
-                boolean validSession = true;
-                User user = null;
+                validSession = true;
+                user = null;
 
                 try(Scanner input = new Scanner(socket.getInputStream()); PrintWriter output = new PrintWriter(socket.getOutputStream())){
 
@@ -41,26 +43,11 @@ public class ServerMovie {
                         switch (components[0]){
 
                             case TCProtocol.REGISTER:
-                                if (components.length == 3) {
-                                    boolean added = userManager.addUser(new User(components[1], components[2], false));
-                                    response = added ? TCProtocol.ADDED : TCProtocol.REJECTED;
-                                } else {
-                                    response = TCProtocol.INVALID;
-                                }
+                                response = registerCommand(components, userManager);
                                 break;
 
                             case TCProtocol.LOGIN:
-                                if (components.length == 3) {
-                                     User u = userManager.searchByUsername(components[1]);
-                                    if (u != null && u.getPassword().equals(components[2])) {
-                                        user = u;
-                                        response = user.isAdmin() ? TCProtocol.ADMIN : TCProtocol.USER;
-                                    } else {
-                                        response = TCProtocol.FAILED;
-                                    }
-                                } else {
-                                    response = TCProtocol.INVALID;
-                                }
+                                response = loginCommand(components, userManager);
                                 break;
 
                             case TCProtocol.LOGOUT:
@@ -70,125 +57,23 @@ public class ServerMovie {
 
 
                             case TCProtocol.RATE:
-                                if(components.length == 3){
-                                    if(user != null){
-                                        if(isNumber(components[2])){
-                                            Film film = filmManager.searchByTitle(components[1]);
-                                            if(film != null){
-                                                boolean succeed = filmManager.rateFilm(film.getTitle(), Integer.parseInt(components[2]));
-                                                if(succeed){
-                                                    response = TCProtocol.SUCCESS;
-                                                }
-                                                else{
-                                                    response = TCProtocol.INVALID_RATING_SUPPLIED;
-                                                }
-                                            }
-                                            else{
-                                                response = TCProtocol.NO_MATCH_FOUND;
-                                            }
-                                        }
-                                        else{
-                                            response = TCProtocol.INVALID_RATING_SUPPLIED;
-                                        }
-                                    }
-                                    else{
-                                        response = TCProtocol.NOT_LOGGED_IN;
-                                    }
-                                }
-                                else{
-                                    response = TCProtocol.INVALID;
-                                }
+                                response = rateCommand(components, filmManager);
                                 break;
 
                             case TCProtocol.SEARCH_NAME:
-                                if(components.length == 2){
-                                    Film film = filmManager.searchByTitle(components[1]);
-                                    if(film != null){
-                                        response = film.toString();
-                                    }
-                                    else{
-                                        response = TCProtocol.NO_MATCH_FOUND;
-                                    }
-                                }
-                                else{
-                                    response = TCProtocol.INVALID;
-                                }
+                                response = searchFilmByName(components, filmManager);
                                 break;
 
                             case TCProtocol.SEARCH_GENRE:
-                                if(components.length == 2){
-                                    List<Film> films = filmManager.searchByGenre(components[1]);
-                                    if(!films.isEmpty()){
-                                        StringBuilder result = new StringBuilder();
-
-                                        for (Film film : films) {
-                                            result.append(film.toString()).append(TCProtocol.KWARG);
-                                        }
-
-                                        // Remove the last "~~" separator if it's present
-                                        if (!result.isEmpty()) {
-                                            result.setLength(result.length() - 2);
-                                        }
-
-                                        response = String.valueOf(result);
-                                    }
-                                    else{
-                                        response = TCProtocol.NO_MATCH_FOUND;
-                                    }
-                                }
-                                else{
-                                    response = TCProtocol.INVALID;
-                                }
+                                response = searchFilmByGenre(components, filmManager);
                                 break;
 
                             case TCProtocol.ADD:
-                                if(components.length == 3){
-                                    if(user != null){
-                                        if(user.isAdmin()){
-                                            boolean succeed = filmManager.addFilm(new Film(components[1], components[2], 0, 0));
-                                            if(succeed){
-                                                response = TCProtocol.ADDED;
-                                            }
-                                            else{
-                                                response = TCProtocol.EXISTS;
-                                            }
-                                        }
-                                        else{
-                                            response = TCProtocol.INSUFFICIENT;
-                                        }
-                                    }
-                                    else{
-                                        response = TCProtocol.INSUFFICIENT;
-                                    }
-                                }
-                                else{
-                                    response = TCProtocol.INVALID;
-                                }
+                                response = addFilm(components, filmManager);
                                 break;
 
                             case TCProtocol.REMOVE:
-                                if(components.length == 2){
-                                    if(user != null){
-                                        if(user.isAdmin()){
-                                            boolean succeed = filmManager.removeFilm(components[1]);
-                                            if(succeed){
-                                                response = TCProtocol.REMOVE;
-                                            }
-                                            else{
-                                                response = TCProtocol.NOT_FOUND;
-                                            }
-                                        }
-                                        else{
-                                            response = TCProtocol.INSUFFICIENT;
-                                        }
-                                    }
-                                    else{
-                                        response = TCProtocol.INSUFFICIENT;
-                                    }
-                                }
-                                else{
-                                    response = TCProtocol.INVALID;
-                                }
+                                response = removeFilm(components, filmManager);
                                 break;
 
                             case TCProtocol.EXIT:
@@ -197,19 +82,7 @@ public class ServerMovie {
                                 break;
 
                             case TCProtocol.SHUTDOWN:
-                                if(user != null){
-                                    if(user.isAdmin()){
-                                        serverOnline = false;
-                                        validSession = false;
-                                        response = TCProtocol.SHUTTING_DOWN;
-                                    }
-                                    else{
-                                        response = TCProtocol.INSUFFICIENT;
-                                    }
-                                }
-                                else{
-                                    response = TCProtocol.INSUFFICIENT;
-                                }
+                                response = shutDownServer();
                                 break;
 
                             default:
@@ -239,6 +112,167 @@ public class ServerMovie {
         } catch (NumberFormatException e) {
             // If the string is not a valid number, throw NumberFormatException
             return false;
+        }
+    }
+
+    public static String registerCommand(String[] components, UserManager userManager){
+        if (components.length == 3) {
+            boolean added = userManager.addUser(new User(components[1], components[2], false));
+            return added ? TCProtocol.ADDED : TCProtocol.REJECTED;
+        } else {
+            return TCProtocol.INVALID;
+        }
+    }
+
+    public static String loginCommand(String[] components, UserManager userManager){
+        if (components.length == 3) {
+            User u = userManager.searchByUsername(components[1]);
+            if (u != null && u.getPassword().equals(components[2])) {
+                user = u;
+                return user.isAdmin() ? TCProtocol.ADMIN : TCProtocol.USER;
+            } else {
+                return TCProtocol.FAILED;
+            }
+        } else {
+            return TCProtocol.INVALID;
+        }
+    }
+
+    public static String rateCommand(String[] components, FilmManager filmManager){
+        if(components.length == 3){
+            if(user != null){
+                if(isNumber(components[2])){
+                    Film film = filmManager.searchByTitle(components[1]);
+                    if(film != null){
+                        boolean succeed = filmManager.rateFilm(film.getTitle(), Integer.parseInt(components[2]));
+                        if(succeed){
+                            return TCProtocol.SUCCESS;
+                        }
+                        else{
+                            return TCProtocol.INVALID_RATING_SUPPLIED;
+                        }
+                    }
+                    else{
+                        return TCProtocol.NO_MATCH_FOUND;
+                    }
+                }
+                else{
+                    return TCProtocol.INVALID_RATING_SUPPLIED;
+                }
+            }
+            else{
+                return TCProtocol.NOT_LOGGED_IN;
+            }
+        }
+        else{
+            return TCProtocol.INVALID;
+        }
+    }
+
+    public static String searchFilmByName(String[] components, FilmManager filmManager){
+        if(components.length == 2){
+            Film film = filmManager.searchByTitle(components[1]);
+            if(film != null){
+                return film.toString();
+            }
+            else{
+                return TCProtocol.NO_MATCH_FOUND;
+            }
+        }
+        else{
+            return TCProtocol.INVALID;
+        }
+    }
+
+    public static String searchFilmByGenre(String[] components, FilmManager filmManager){
+        if(components.length == 2){
+            List<Film> films = filmManager.searchByGenre(components[1]);
+            if(!films.isEmpty()){
+                StringBuilder result = new StringBuilder();
+
+                for (Film film : films) {
+                    result.append(film.toString()).append(TCProtocol.KWARG);
+                }
+
+                // Remove the last "~~" separator if it's present
+                if (!result.isEmpty()) {
+                    result.setLength(result.length() - 2);
+                }
+
+                return String.valueOf(result);
+            }
+            else{
+                return TCProtocol.NO_MATCH_FOUND;
+            }
+        }
+        else{
+            return TCProtocol.INVALID;
+        }
+    }
+
+    public static String addFilm(String[] components, FilmManager filmManager){
+        if(components.length == 3){
+            if(user != null){
+                if(user.isAdmin()){
+                    boolean succeed = filmManager.addFilm(new Film(components[1], components[2], 0, 0));
+                    if(succeed){
+                        return TCProtocol.ADDED;
+                    }
+                    else{
+                        return TCProtocol.EXISTS;
+                    }
+                }
+                else{
+                    return TCProtocol.INSUFFICIENT;
+                }
+            }
+            else{
+                return TCProtocol.INSUFFICIENT;
+            }
+        }
+        else{
+            return TCProtocol.INVALID;
+        }
+    }
+
+    public static String removeFilm(String[] components, FilmManager filmManager){
+        if(components.length == 2){
+            if(user != null){
+                if(user.isAdmin()){
+                    boolean succeed = filmManager.removeFilm(components[1]);
+                    if(succeed){
+                        return TCProtocol.REMOVE;
+                    }
+                    else{
+                        return TCProtocol.NOT_FOUND;
+                    }
+                }
+                else{
+                    return TCProtocol.INSUFFICIENT;
+                }
+            }
+            else{
+                return TCProtocol.INSUFFICIENT;
+            }
+        }
+        else{
+            return TCProtocol.INVALID;
+        }
+    }
+
+    public static String shutDownServer(){
+        if(user != null){
+            if(user.isAdmin()){
+                serverOnline = false;
+                validSession = false;
+                return TCProtocol.SHUTTING_DOWN;
+            }
+            else{
+                return TCProtocol.INSUFFICIENT;
+            }
+        }
+        else{
+            return TCProtocol.INSUFFICIENT;
         }
     }
 
