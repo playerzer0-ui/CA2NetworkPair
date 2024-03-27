@@ -17,6 +17,7 @@ import java.util.Map;
 import java.util.Scanner;
 
 public class ServerMovie {
+    private static boolean serverOnline = true;
     public static void main(String[] args) {
         FilmManager filmManager = new FilmManager();
         UserManager userManager = new UserManager();
@@ -25,7 +26,7 @@ public class ServerMovie {
         System.out.println("movie server online...");
         try(ServerSocket serverSocket = new ServerSocket(TCProtocol.PORT)){
 
-            while(true){
+            while(serverOnline){
                 Socket socket = serverSocket.accept();
                 boolean validSession = true;
                 user = null;
@@ -158,6 +159,26 @@ public class ServerMovie {
                                 }
                                 else{
                                     response = TCProtocol.NO_MATCH_FOUND;
+                                }
+                                break;
+
+                            case TCProtocol.EXIT:
+                                validSession = false;
+                                response = TCProtocol.GOODBYE;
+                                break;
+
+                            case TCProtocol.SHUTDOWN:
+                                if(user != null){
+                                    if(user.isAdmin()){
+                                        serverOnline = false;
+                                        response = TCProtocol.SHUTTING_DOWN;
+                                    }
+                                    else{
+                                        response = TCProtocol.INSUFFICIENT;
+                                    }
+                                }
+                                else{
+                                    response = TCProtocol.INSUFFICIENT;
                                 }
                                 break;
 
