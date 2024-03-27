@@ -33,7 +33,7 @@ public class ClearClientMovie {
                     String response = input.nextLine();
                     // Display result to user
                     System.out.println("Received from server: " + response);
-                    if(response.equals(TCProtocol.EXIT)){
+                    if(response.equals(TCProtocol.GOODBYE)){
                         validSession = false;
                     }
                 }

@@ -68,14 +68,14 @@ public class FilmManager {
     }
 
     /**
-     * rate a film from 1 to 5
+     * rate a film from 1 to 10
      * @param title the title of the film
      * @param rating number rating
      * @return true or false, if successful or not
      */
     public boolean rateFilm(String title, int rating){
         Film film = searchByTitle(title);
-        if(film == null || rating <= 0 || rating > 5){
+        if(film == null || rating <= 0 || rating > 10){
             return false;
         }
 
