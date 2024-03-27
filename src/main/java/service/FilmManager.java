@@ -79,7 +79,7 @@ public class FilmManager {
             return false;
         }
 
-        film.setRateCount(film.getRateCount() + 1);
+        film.setNumRaters(film.getNumRaters() + 1);
         film.setTotalRating(film.getTotalRating() + rating);
         films.set(films.indexOf(film), film);
 

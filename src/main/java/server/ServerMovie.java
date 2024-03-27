@@ -12,6 +12,7 @@ import java.net.BindException;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
 
@@ -70,10 +71,98 @@ public class ServerMovie {
                                 break;
 
                             case TCProtocol.SEARCH_NAME:
-
+                                if(components.length == 2){
+                                    Film film = filmManager.searchByTitle(components[1]);
+                                    if(film != null){
+                                        response = film.toString();
+                                    }
+                                    else{
+                                        response = TCProtocol.NO_MATCH_FOUND;
+                                    }
+                                }
+                                else{
+                                    response = TCProtocol.INVALID;
+                                }
                                 break;
 
                             case TCProtocol.SEARCH_GENRE:
+                                if(components.length == 2){
+                                    List<Film> films = filmManager.searchByGenre(components[1]);
+                                    if(!films.isEmpty()){
+                                        StringBuilder result = new StringBuilder();
+
+                                        for (Film film : films) {
+                                            result.append(film.toString()).append(TCProtocol.KWARG);
+                                        }
+
+                                        // Remove the last "~~" separator if it's present
+                                        if (!result.isEmpty()) {
+                                            result.setLength(result.length() - 2);
+                                        }
+
+                                        response = String.valueOf(result);
+                                    }
+                                    else{
+                                        response = TCProtocol.NO_MATCH_FOUND;
+                                    }
+                                }
+                                else{
+                                    response = TCProtocol.INVALID;
+                                }
+                                break;
+
+                            case TCProtocol.ADD:
+                                if(components.length == 3){
+                                    if(user != null){
+                                        if(user.isAdmin()){
+                                            boolean succeed = filmManager.addFilm(new Film(components[1], components[2], 0, 0));
+                                            if(succeed){
+                                                response = TCProtocol.ADDED;
+                                            }
+                                            else{
+                                                response = TCProtocol.EXISTS;
+                                            }
+                                        }
+                                        else{
+                                            response = TCProtocol.INSUFFICIENT;
+                                        }
+                                    }
+                                    else{
+                                        response = TCProtocol.NOT_LOGGED_IN;
+                                    }
+                                }
+                                else{
+                                    response = TCProtocol.NO_MATCH_FOUND;
+                                }
+                                break;
+
+                            case TCProtocol.REMOVE:
+                                if(components.length == 2){
+                                    if(user != null){
+                                        if(user.isAdmin()){
+                                            boolean succeed = filmManager.removeFilm(components[1]);
+                                            if(succeed){
+                                                response = TCProtocol.ADDED;
+                                            }
+                                            else{
+                                                response = TCProtocol.EXISTS;
+                                            }
+                                        }
+                                        else{
+                                            response = TCProtocol.INSUFFICIENT;
+                                        }
+                                    }
+                                    else{
+                                        response = TCProtocol.NOT_LOGGED_IN;
+                                    }
+                                }
+                                else{
+                                    response = TCProtocol.NO_MATCH_FOUND;
+                                }
+                                break;
+
+                            default:
+                                response = TCProtocol.INVALID;
                                 break;
                         }
 

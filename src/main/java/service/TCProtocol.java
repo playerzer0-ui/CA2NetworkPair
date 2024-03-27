@@ -4,6 +4,7 @@ public class TCProtocol {
     public final static int PORT = 41235;
     public final static String HOST = "localhost";
     public final static String DELIMITER = "%%";
+    public final static String KWARG = "~~";
     public final static String INVALID = "INVALID_REQUEST";
     public final static String EXIT = "exit";
     public final static String GOODBYE = "GOODBYE";

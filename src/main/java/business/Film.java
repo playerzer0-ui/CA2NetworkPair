@@ -1,18 +1,18 @@
 package business;
 
-import java.util.ArrayList;
+import service.TCProtocol;
 
 public class Film {
     private String title;
     private String genre;
     private int totalRating;
-    private int rateCount;
+    private int numRaters;
 
-    public Film(String title, String genre, int totalRating, int rateCount) {
+    public Film(String title, String genre, int totalRating, int numRaters) {
         this.title = title;
         this.genre = genre;
         this.totalRating = totalRating;
-        this.rateCount = rateCount;
+        this.numRaters = numRaters;
     }
 
     public Film(String title){
@@ -45,12 +45,12 @@ public class Film {
         this.totalRating = totalRating;
     }
 
-    public int getRateCount() {
-        return rateCount;
+    public int getNumRaters() {
+        return numRaters;
     }
 
-    public void setRateCount(int rateCount) {
-        this.rateCount = rateCount;
+    public void setNumRaters(int numRaters) {
+        this.numRaters = numRaters;
     }
 
     @Override
@@ -70,11 +70,7 @@ public class Film {
 
     @Override
     public String toString() {
-        return "Film{" +
-                "title='" + title + '\'' +
-                ", Genre=" + genre +
-                ", totalRating=" + totalRating +
-                ", rateCount=" + rateCount +
-                '}';
+        return title + TCProtocol.DELIMITER + genre + TCProtocol.DELIMITER + TCProtocol.DELIMITER
+                + totalRating + TCProtocol.DELIMITER + numRaters;
     }
 }
