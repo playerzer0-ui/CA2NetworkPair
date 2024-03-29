@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.Socket;
 import java.net.UnknownHostException;
+import java.util.InputMismatchException;
 import java.util.Scanner;
 import service.TCProtocol;
 
@@ -19,6 +20,7 @@ public class MenuClientMovie {
                     displayMenu();
 
                     int choice = getUserChoice(userInput);
+                    userInput.nextLine();
 
                     String message = "";
                     switch (choice) {
@@ -40,7 +42,7 @@ public class MenuClientMovie {
                             break;
                         default:
                             System.out.println("Invalid choice. Please select a valid option.");
-                            continue;
+                            break;
                     }
 
                     output.println(message);
@@ -73,25 +75,27 @@ public class MenuClientMovie {
 
     private static int getUserChoice(Scanner userInput) {
         System.out.print("Your choice: ");
-        return userInput.nextInt();
+        try{
+            return userInput.nextInt();
+        }
+        catch(InputMismatchException e){
+            return -1;
+        }
     }
 
     private static String searchByTitle(Scanner userInput) {
-        userInput.nextLine();
         System.out.print("Enter film title: ");
         String title = userInput.nextLine();
         return TCProtocol.SEARCH_NAME + TCProtocol.DELIMITER + title;
     }
 
     private static String searchByGenre(Scanner userInput) {
-        userInput.nextLine();
         System.out.print("Enter genre: ");
         String genre = userInput.nextLine();
         return TCProtocol.SEARCH_GENRE + TCProtocol.DELIMITER + genre;
     }
 
     private static String addFilm(Scanner userInput) {
-        userInput.nextLine();
         System.out.print("Enter film title: ");
         String title = userInput.nextLine();
         System.out.print("Enter film genre: ");
@@ -100,7 +104,6 @@ public class MenuClientMovie {
     }
 
     private static String removeFilm(Scanner userInput) {
-        userInput.nextLine();
         System.out.print("Enter film title to remove: ");
         String title = userInput.nextLine();
         return TCProtocol.REMOVE + TCProtocol.DELIMITER + title;
