@@ -10,20 +10,56 @@ import service.TCProtocol;
 public class ClearClientMovie {
     public static void main(String[] args) {
         Scanner userInput = new Scanner(System.in);
-        // Requests a connection
-        try (Socket dataSocket = new Socket(TCProtocol.HOST,TCProtocol.PORT)) {
+        try (Socket dataSocket = new Socket(TCProtocol.HOST, TCProtocol.PORT)) {
 
-            // Sets up communication lines
-            // Create a Scanner to receive messages
-            // Create a Printwriter to send messages
+
             try (Scanner input = new Scanner(dataSocket.getInputStream());
                  PrintWriter output = new PrintWriter(dataSocket.getOutputStream())) {
                 boolean validSession = true;
-                // Repeated:
-                while(validSession) {
-                    // Ask user for information to be sent
-                    System.out.println("Please enter a message to be sent (Send EXIT to end):");
-                    String message = userInput.nextLine();
+                while (validSession) {
+                    System.out.println("Please select an option:");
+                    System.out.println("1. Search by title");
+                    System.out.println("2. Search by genre");
+                    System.out.println("3. Add a film");
+                    System.out.println("4. Remove a film");
+                    System.out.println("5. Exit");
+
+
+                    System.out.print("Your choice: ");
+                    int choice = userInput.nextInt();
+                    userInput.nextLine();
+
+
+                    String message = "";
+                    switch (choice) {
+                        case 1:
+                            System.out.print("Enter film title: ");
+                            message = "searchByName%%" + userInput.nextLine();
+                            break;
+                        case 2:
+                            System.out.print("Enter genre: ");
+                            message = "searchByGenre%%" + userInput.nextLine();
+                            break;
+                        case 3:
+                            System.out.print("Enter film title: ");
+                            String title = userInput.nextLine();
+                            System.out.print("Enter film genre: ");
+                            String genre = userInput.nextLine();
+                            message = "add%%" + title + "%%" + genre;
+                            break;
+                        case 4:
+                            System.out.print("Enter film title to remove: ");
+                            message = "remove%%" + userInput.nextLine();
+                            break;
+                        case 5:
+                            message = TCProtocol.EXIT;
+                            validSession = false;
+                            break;
+                        default:
+                            System.out.println("Invalid choice. Please select a valid option.");
+                            continue;
+                    }
+
                     // Send message to server
                     output.println(message);
                     // Flush message through to server
@@ -33,7 +69,7 @@ public class ClearClientMovie {
                     String response = input.nextLine();
                     // Display result to user
                     System.out.println("Received from server: " + response);
-                    if(response.equals(TCProtocol.GOODBYE)){
+                    if (response.equals(TCProtocol.GOODBYE)) {
                         validSession = false;
                     }
                 }
