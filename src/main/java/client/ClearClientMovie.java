@@ -62,7 +62,6 @@ public class ClearClientMovie {
 
                     // Send message to server
                     output.println(message);
-                    // Flush message through to server
                     output.flush();
 
                     // Receive message from server
