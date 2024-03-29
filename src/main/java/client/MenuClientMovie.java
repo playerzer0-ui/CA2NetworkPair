@@ -7,7 +7,7 @@ import java.net.UnknownHostException;
 import java.util.Scanner;
 import service.TCProtocol;
 
-public class ClearClientMovie {
+public class MenuClientMovie {
     public static void main(String[] args) {
         Scanner userInput = new Scanner(System.in);
         try (Socket dataSocket = new Socket(TCProtocol.HOST, TCProtocol.PORT)) {
