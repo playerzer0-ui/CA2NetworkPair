@@ -10,54 +10,30 @@ import service.TCProtocol;
 
 public class MenuClientMovie {
     private static boolean validSession;
+    private static boolean isLogged;
     public static void main(String[] args) {
+        String message = null;
+        int choice;
         Scanner userInput = new Scanner(System.in);
         // Requests a connection
         try (Socket dataSocket = new Socket(TCProtocol.HOST, TCProtocol.PORT)) {
             try (Scanner input = new Scanner(dataSocket.getInputStream());
                  PrintWriter output = new PrintWriter(dataSocket.getOutputStream())) {
                 validSession = true;
-                while (validSession) {
-                    displayMenu();
+                isLogged = false;
 
-                    int choice = getUserChoice(userInput);
+                while(validSession){
+                    if(!isLogged){
+                        displayLanding();
 
-                    String message = "";
-                    switch (choice) {
-                        case 1:
-                            message = register(userInput);
-                            break;
-                        case 2:
-                            message = login(userInput);
-                            break;
-                        case 3:
-                            message = rateFilm(userInput);
-                            break;
-                        case 4:
-                            message = logout();
-                            break;
-                        case 5:
-                            message = searchByTitle(userInput);
-                            break;
-                        case 6:
-                            message = searchByGenre(userInput);
-                            break;
-                        case 7:
-                            message = addFilm(userInput);
-                            break;
-                        case 8:
-                            message = removeFilm(userInput);
-                            break;
-                        case 9:
-                            message = TCProtocol.EXIT;
-                            validSession = false;
-                            break;
-                        case 10:
-                            message = TCProtocol.SHUTDOWN;
-                            break;
-                        default:
-                            System.out.println("Invalid choice. Please select a valid option.");
-                            break;
+                        choice = getUserChoice(userInput);
+                        message = generateRequestLanding(choice, userInput);
+                    }
+                    else{
+                        displayMenu();
+
+                        choice = getUserChoice(userInput);
+                        message = generateRequestSession(choice, userInput);
                     }
 
                     output.println(message);
@@ -65,8 +41,12 @@ public class MenuClientMovie {
 
                     String response = input.nextLine();
                     System.out.println("Received from server: " + response);
-                    if (response.equals(TCProtocol.GOODBYE)) {
-                        validSession = false;
+
+                    if(!isLogged){
+                        handleResponseLanding(response);
+                    }
+                    else{
+                        handleResponseSession(message, response);
                     }
                 }
 
@@ -98,6 +78,109 @@ public class MenuClientMovie {
         return request;
     }
 
+    private static String generateRequestSession(int choice, Scanner userInput){
+        String request = null;
+        switch (choice) {
+            case 1:
+                request = rateFilm(userInput);
+                break;
+            case 2:
+                request = searchByTitle(userInput);
+                break;
+            case 3:
+                request = searchByGenre(userInput);
+                break;
+            case 4:
+                request = exit();
+                break;
+            case 5:
+                request = logout();
+                break;
+            default:
+                System.out.println("Invalid choice. Please select a valid option.");
+                break;
+        }
+        return request;
+    }
+
+    private static void handleResponseLanding(String response){
+        switch (response){
+            case TCProtocol.ADDED:
+                System.out.println("added to the program");
+                break;
+
+            case TCProtocol.REJECTED:
+                System.out.println("register rejected, check credentials and make sure that is not in the program already");
+                break;
+
+            case TCProtocol.USER:
+                isLogged = true;
+                System.out.println("login success, welcome user");
+                break;
+
+            case TCProtocol.ADMIN:
+                isLogged = true;
+                System.out.println("login success, welcome admin");
+                break;
+
+            case TCProtocol.GOODBYE:
+                validSession = false;
+                break;
+
+            default:
+                System.out.println("invalid request, try again");
+                break;
+        }
+    }
+
+    private static void handleResponseSession(String request, String response){
+        switch (response){
+            case TCProtocol.SUCCESS:
+                System.out.println("rated a film");
+                break;
+
+            case TCProtocol.INVALID_RATING_SUPPLIED:
+                System.out.println("rating supplied is invalid");
+                break;
+
+            case TCProtocol.NO_MATCH_FOUND:
+                System.out.println("can't find the title you are looking for");
+                break;
+
+            case TCProtocol.NOT_LOGGED_IN:
+                System.out.println("not logged in, request denied");
+                break;
+
+
+            case TCProtocol.LOGGED_OUT:
+                isLogged = false;
+                break;
+
+            case TCProtocol.GOODBYE:
+                validSession = false;
+                break;
+
+            default:
+                String[] requestComponents = request.split(TCProtocol.DELIMITER);
+
+                if(requestComponents[0].equals(TCProtocol.SEARCH_NAME)){
+                    String[] components = response.split(TCProtocol.DELIMITER);
+                    displayFilm(components);
+                }
+                else if(requestComponents[0].equals(TCProtocol.SEARCH_GENRE)){
+                    String[] components = response.split(TCProtocol.KWARG);
+                    for(String filmResponse : components){
+                        String[] filmString = filmResponse.split(TCProtocol.DELIMITER);
+                        displayFilm(filmString);
+                    }
+                }
+                else{
+                    System.out.println("invalid request, try again");
+                }
+                break;
+        }
+    }
+
     private static void displayLanding(){
         System.out.println("Welcome to the film program:");
         System.out.println("1. Register");
@@ -120,6 +203,15 @@ public class MenuClientMovie {
         System.out.println("3. Shutdown server");
         System.out.println("4. Exit");
         System.out.println("5. Logout");
+    }
+
+    private static void displayFilm(String[] components){
+        System.out.println("--------------------------------");
+        System.out.println("movie title: " + components[0]);
+        System.out.println("genre: " + components[1]);
+        System.out.println("total ratings: " + components[2]);
+        System.out.println("number of ratings: " + components[3]);
+        System.out.println("--------------------------------");
     }
 
     private static int getUserChoice(Scanner userInput) {
