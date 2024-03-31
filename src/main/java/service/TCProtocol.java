@@ -30,6 +30,7 @@ public class TCProtocol {
     public final static String SEARCH_GENRE = "searchByGenre";
     public final static String ADD = "add";
     public final static String REMOVE = "remove";
+    public final static String REMOVED = "REMOVED";
     public final static String SUCCESS = "SUCCESS";
     public final static String INVALID_RATING_SUPPLIED = "INVALID_RATING_SUPPLIED";
     public final static String NOT_FOUND = "NOT_FOUND";
