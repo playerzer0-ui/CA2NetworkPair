@@ -241,7 +241,7 @@ public class ServerMovie {
                 if(user.isAdmin()){
                     boolean succeed = filmManager.removeFilm(components[1]);
                     if(succeed){
-                        return TCProtocol.REMOVE;
+                        return TCProtocol.REMOVED;
                     }
                     else{
                         return TCProtocol.NOT_FOUND;

@@ -11,8 +11,9 @@ import service.TCProtocol;
 public class MenuClientMovie {
     private static boolean validSession;
     private static boolean isLogged;
+    private static boolean isAdmin;
     public static void main(String[] args) {
-        String message = null;
+        String message;
         int choice;
         Scanner userInput = new Scanner(System.in);
         // Requests a connection
@@ -21,6 +22,7 @@ public class MenuClientMovie {
                  PrintWriter output = new PrintWriter(dataSocket.getOutputStream())) {
                 validSession = true;
                 isLogged = false;
+                isAdmin = false;
 
                 while(validSession){
                     if(!isLogged){
@@ -30,10 +32,18 @@ public class MenuClientMovie {
                         message = generateRequestLanding(choice, userInput);
                     }
                     else{
-                        displayMenu();
+                        if(!isAdmin){
+                            displayMenu();
 
-                        choice = getUserChoice(userInput);
-                        message = generateRequestSession(choice, userInput);
+                            choice = getUserChoice(userInput);
+                            message = generateRequestSession(choice, userInput);
+                        }
+                        else{
+                            displayAdmin();
+
+                            choice = getUserChoice(userInput);
+                            message = generateRequestAdmin(choice, userInput);
+                        }
                     }
 
                     output.println(message);
@@ -46,7 +56,12 @@ public class MenuClientMovie {
                         handleResponseLanding(response);
                     }
                     else{
-                        handleResponseSession(message, response);
+                        if(!isAdmin){
+                            handleResponseSession(message, response);
+                        }
+                        else{
+                            handleResponseAdmin(response);
+                        }
                     }
                 }
 
@@ -103,6 +118,31 @@ public class MenuClientMovie {
         return request;
     }
 
+    private static String generateRequestAdmin(int choice, Scanner userInput){
+        String request = null;
+        switch (choice) {
+            case 1:
+                request = addFilm(userInput);
+                break;
+            case 2:
+                request = removeFilm(userInput);
+                break;
+            case 3:
+                request = shutdownServer();
+                break;
+            case 4:
+                request = exit();
+                break;
+            case 5:
+                request = logout();
+                break;
+            default:
+                System.out.println("Invalid choice. Please select a valid option.");
+                break;
+        }
+        return request;
+    }
+
     private static void handleResponseLanding(String response){
         switch (response){
             case TCProtocol.ADDED:
@@ -115,11 +155,13 @@ public class MenuClientMovie {
 
             case TCProtocol.USER:
                 isLogged = true;
+                isAdmin = false;
                 System.out.println("login success, welcome user");
                 break;
 
             case TCProtocol.ADMIN:
                 isLogged = true;
+                isAdmin = true;
                 System.out.println("login success, welcome admin");
                 break;
 
@@ -154,6 +196,7 @@ public class MenuClientMovie {
 
             case TCProtocol.LOGGED_OUT:
                 isLogged = false;
+                isAdmin = false;
                 break;
 
             case TCProtocol.GOODBYE:
@@ -177,6 +220,39 @@ public class MenuClientMovie {
                 else{
                     System.out.println("invalid request, try again");
                 }
+                break;
+        }
+    }
+
+    private static void handleResponseAdmin(String response){
+        switch (response){
+            case TCProtocol.ADDED:
+                System.out.println("added to the program");
+                break;
+
+            case TCProtocol.EXISTS:
+                System.out.println("that film already exists");
+                break;
+
+            case TCProtocol.INSUFFICIENT:
+                System.out.println("insufficient permissions, who are you?");
+                break;
+
+            case TCProtocol.NOT_FOUND:
+                System.out.println("film not found");
+                break;
+
+            case TCProtocol.LOGGED_OUT:
+                isLogged = false;
+                isAdmin = false;
+                break;
+
+            case TCProtocol.GOODBYE:
+                validSession = false;
+                break;
+
+            default:
+                System.out.println("invalid request, try again");
                 break;
         }
     }
@@ -282,6 +358,10 @@ public class MenuClientMovie {
         System.out.print("Enter film title to remove: ");
         String title = userInput.nextLine();
         return TCProtocol.REMOVE + TCProtocol.DELIMITER + title;
+    }
+
+    private static String shutdownServer(){
+        return TCProtocol.SHUTDOWN;
     }
 
     private static String exit(){
