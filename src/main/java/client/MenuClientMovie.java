@@ -50,7 +50,7 @@ public class MenuClientMovie {
                     output.flush();
 
                     String response = input.nextLine();
-                    System.out.println("Received from server: " + response);
+//                    System.out.println("Received from server: " + response);
 
                     if(!isLogged){
                         handleResponseLanding(response);
@@ -159,6 +159,10 @@ public class MenuClientMovie {
                 System.out.println("login success, welcome user");
                 break;
 
+            case TCProtocol.FAILED:
+                System.out.println("login failed, try again");
+                break;
+
             case TCProtocol.ADMIN:
                 isLogged = true;
                 isAdmin = true;
@@ -238,8 +242,16 @@ public class MenuClientMovie {
                 System.out.println("insufficient permissions, who are you?");
                 break;
 
+            case TCProtocol.REMOVED:
+                System.out.println("film successfully removed");
+                break;
+
             case TCProtocol.NOT_FOUND:
                 System.out.println("film not found");
+                break;
+
+            case TCProtocol.SHUTTING_DOWN:
+                System.out.println("server shut down, SERVER SHUT DOWN");
                 break;
 
             case TCProtocol.LOGGED_OUT:
