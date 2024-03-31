@@ -9,13 +9,14 @@ import java.util.Scanner;
 import service.TCProtocol;
 
 public class MenuClientMovie {
+    private static boolean validSession;
     public static void main(String[] args) {
         Scanner userInput = new Scanner(System.in);
         // Requests a connection
         try (Socket dataSocket = new Socket(TCProtocol.HOST, TCProtocol.PORT)) {
             try (Scanner input = new Scanner(dataSocket.getInputStream());
                  PrintWriter output = new PrintWriter(dataSocket.getOutputStream())) {
-                boolean validSession = true;
+                validSession = true;
                 while (validSession) {
                     displayMenu();
 
@@ -78,18 +79,47 @@ public class MenuClientMovie {
         }
     }
 
-    private static void displayMenu() {
-        System.out.println("Please select an option:");
+    private static String generateRequestLanding(int choice, Scanner userInput){
+        String request = null;
+        switch (choice) {
+            case 1:
+                request = register(userInput);
+                break;
+            case 2:
+                request = login(userInput);
+                break;
+            case 3:
+                request = exit();
+                break;
+            default:
+                System.out.println("Invalid choice. Please select a valid option.");
+                break;
+        }
+        return request;
+    }
+
+    private static void displayLanding(){
+        System.out.println("Welcome to the film program:");
         System.out.println("1. Register");
         System.out.println("2. Login");
-        System.out.println("3. Rate a film");
-        System.out.println("4. Logout");
-        System.out.println("5. Search by title");
-        System.out.println("6. Search by genre");
-        System.out.println("7. Add a film");
-        System.out.println("8. Remove a film");
-        System.out.println("9. Exit");
-        System.out.println("10. Shutdown server");
+        System.out.println("3. Exit");
+    }
+
+    private static void displayMenu() {
+        System.out.println("Please select an option:");
+        System.out.println("1. Rate a film");
+        System.out.println("2. Search by title");
+        System.out.println("3. Search by genre");
+        System.out.println("4. Exit");
+        System.out.println("5. Logout");
+    }
+
+    private static void displayAdmin(){
+        System.out.println("1. Add a film");
+        System.out.println("2. Remove a film");
+        System.out.println("3. Shutdown server");
+        System.out.println("4. Exit");
+        System.out.println("5. Logout");
     }
 
     private static int getUserChoice(Scanner userInput) {
@@ -127,7 +157,7 @@ public class MenuClientMovie {
     private static String rateFilm(Scanner userInput) {
         System.out.print("Enter film title: ");
         String title = userInput.nextLine();
-        System.out.print("Enter your rating (1-5): ");
+        System.out.print("Enter your rating (1-10): ");
         int rating = userInput.nextInt();
         return TCProtocol.RATE + TCProtocol.DELIMITER + title + TCProtocol.DELIMITER + rating;
     }
@@ -160,5 +190,10 @@ public class MenuClientMovie {
         System.out.print("Enter film title to remove: ");
         String title = userInput.nextLine();
         return TCProtocol.REMOVE + TCProtocol.DELIMITER + title;
+    }
+
+    private static String exit(){
+        validSession = false;
+        return TCProtocol.EXIT;
     }
 }
