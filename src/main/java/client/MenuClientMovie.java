@@ -50,7 +50,7 @@ public class MenuClientMovie {
                     output.flush();
 
                     String response = input.nextLine();
-//                    System.out.println("Received from server: " + response);
+                    System.out.println("Received from server: " + response);
 
                     if(!isLogged){
                         handleResponseLanding(response);
