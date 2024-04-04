@@ -15,9 +15,9 @@ import java.util.List;
 import java.util.Scanner;
 
 public class ServerMovie {
-    private static boolean serverOnline = true;
-    private static User user;
-    private static boolean validSession;
+    public static boolean serverOnline = true;
+    public static User user;
+    public static boolean validSession;
 
     public static void main(String[] args) {
         FilmManager filmManager = new FilmManager();
