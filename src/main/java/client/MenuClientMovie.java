@@ -50,7 +50,7 @@ public class MenuClientMovie {
                     output.flush();
 
                     String response = input.nextLine();
-//                    System.out.println("Received from server: " + response);
+                    //System.out.println("Received from server: " + response);
 
                     if(!isLogged){
                         handleResponseLanding(response);
@@ -338,7 +338,7 @@ public class MenuClientMovie {
         System.out.print("Enter film title: ");
         String title = userInput.nextLine();
         System.out.print("Enter your rating (1-10): ");
-        int rating = userInput.nextInt();
+        int rating = getUserChoice(userInput);
         return TCProtocol.RATE + TCProtocol.DELIMITER + title + TCProtocol.DELIMITER + rating;
     }
 
