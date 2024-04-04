@@ -12,6 +12,7 @@ import java.util.List;
 class FilmManagerTest {
 
     private FilmManager filmManager;
+    private final ArrayList<Film> emptyList = new ArrayList<>();
 
     @BeforeEach
     public void init() {
@@ -59,7 +60,7 @@ class FilmManagerTest {
      */
     @Test
     void searchByTitle_empty(){
-        filmManager = new FilmManager();
+        filmManager = new FilmManager(emptyList);
         Film act = filmManager.searchByTitle("spongebob");
 
         assertNull(act);
@@ -94,7 +95,7 @@ class FilmManagerTest {
      */
     @Test
     void searchByGenre_empty() {
-        filmManager = new FilmManager();
+        filmManager = new FilmManager(emptyList);
         List<Film> exp = new ArrayList<>();
 
         List<Film> act = filmManager.searchByGenre("horror");
@@ -156,7 +157,7 @@ class FilmManagerTest {
      */
     @Test
     void rateFilm_empty() {
-        filmManager = new FilmManager();
+        filmManager = new FilmManager(emptyList);
         boolean exp = false;
         boolean act = filmManager.rateFilm("dark souls", 3);
 
@@ -215,7 +216,7 @@ class FilmManagerTest {
      */
     @Test
     void removeFilm_empty() {
-        filmManager = new FilmManager();
+        filmManager = new FilmManager(emptyList);
         boolean exp = false;
         boolean act = filmManager.removeFilm("dark souls");
 
