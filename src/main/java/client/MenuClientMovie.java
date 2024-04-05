@@ -1,17 +1,19 @@
 package client;
 
+import service.TCProtocol;
+
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.InputMismatchException;
 import java.util.Scanner;
-import service.TCProtocol;
 
 public class MenuClientMovie {
     private static boolean validSession;
     private static boolean isLogged;
     private static boolean isAdmin;
+
     public static void main(String[] args) {
         String message;
         int choice;
@@ -24,23 +26,18 @@ public class MenuClientMovie {
                 isLogged = false;
                 isAdmin = false;
 
-                while(validSession){
-                    if(!isLogged){
+                while (validSession) {
+                    if (!isLogged) {
                         displayLanding();
-
                         choice = getUserChoice(userInput);
                         message = generateRequestLanding(choice, userInput);
-                    }
-                    else{
-                        if(!isAdmin){
+                    } else {
+                        if (!isAdmin) {
                             displayMenu();
-
                             choice = getUserChoice(userInput);
                             message = generateRequestSession(choice, userInput);
-                        }
-                        else{
+                        } else {
                             displayAdmin();
-
                             choice = getUserChoice(userInput);
                             message = generateRequestAdmin(choice, userInput);
                         }
@@ -50,23 +47,18 @@ public class MenuClientMovie {
                     output.flush();
 
                     String response = input.nextLine();
-                    //System.out.println("Received from server: " + response);
 
-                    if(!isLogged){
+                    if (!isLogged) {
                         handleResponseLanding(response);
-                    }
-                    else{
-                        if(!isAdmin){
+                    } else {
+                        if (!isAdmin) {
                             handleResponseSession(message, response);
-                        }
-                        else{
+                        } else {
                             handleResponseAdmin(response);
                         }
                     }
                 }
-
             }
-
         } catch (UnknownHostException e) {
             System.out.println("Host cannot be found at this moment. Try again later");
         } catch (IOException e) {
@@ -74,7 +66,7 @@ public class MenuClientMovie {
         }
     }
 
-    private static String generateRequestLanding(int choice, Scanner userInput){
+    private static String generateRequestLanding(int choice, Scanner userInput) {
         String request = null;
         switch (choice) {
             case 1:
@@ -93,7 +85,7 @@ public class MenuClientMovie {
         return request;
     }
 
-    private static String generateRequestSession(int choice, Scanner userInput){
+    private static String generateRequestSession(int choice, Scanner userInput) {
         String request = null;
         switch (choice) {
             case 1:
@@ -118,7 +110,7 @@ public class MenuClientMovie {
         return request;
     }
 
-    private static String generateRequestAdmin(int choice, Scanner userInput){
+    private static String generateRequestAdmin(int choice, Scanner userInput) {
         String request = null;
         switch (choice) {
             case 1:
@@ -143,30 +135,30 @@ public class MenuClientMovie {
         return request;
     }
 
-    private static void handleResponseLanding(String response){
-        switch (response){
+    private static void handleResponseLanding(String response) {
+        switch (response) {
             case TCProtocol.ADDED:
-                System.out.println("Account Has Been Successfully Register");
+                System.out.println("Account Has Been Successfully Registered");
                 break;
 
             case TCProtocol.REJECTED:
-                System.out.println("register rejected, check credentials and make sure that is not in the program already");
+                System.out.println("Register rejected. Check credentials or make sure the account is not already registered.");
                 break;
 
             case TCProtocol.USER:
                 isLogged = true;
                 isAdmin = false;
-                System.out.println("login success, welcome user");
+                System.out.println("Login success. Welcome user.");
                 break;
 
             case TCProtocol.FAILED:
-                System.out.println("login failed, try again");
+                System.out.println("Login failed. Please try again.");
                 break;
 
             case TCProtocol.ADMIN:
                 isLogged = true;
                 isAdmin = true;
-                System.out.println("login success, welcome admin");
+                System.out.println("Login success. Welcome admin.");
                 break;
 
             case TCProtocol.GOODBYE:
@@ -174,31 +166,38 @@ public class MenuClientMovie {
                 break;
 
             default:
-                System.out.println("invalid request, try again");
+                System.out.println("Invalid request. Please try again.");
                 break;
         }
     }
 
-    private static void handleResponseSession(String request, String response){
-        switch (response){
+    private static void handleResponseSession(String request, String response) {
+        switch (response) {
             case TCProtocol.SUCCESS:
-                System.out.println("rated a film");
+                System.out.println("Rated a film.");
                 break;
 
             case TCProtocol.INVALID_RATING_SUPPLIED:
-                System.out.println("rating supplied is invalid");
+                System.out.println("Invalid rating supplied.");
                 break;
 
             case TCProtocol.NO_MATCH_FOUND:
-                System.out.println("can't find the title you are looking for");
+                System.out.println("Cannot find the title you are looking for.");
                 break;
 
             case TCProtocol.NOT_LOGGED_IN:
-                System.out.println("not logged in, request denied");
+                System.out.println("Not logged in. Request denied.");
                 break;
 
-
             case TCProtocol.LOGGED_OUT:
+                System.out.println("Logging out...");
+                try {
+                    Thread.sleep(1000);
+                    System.out.println("Successfully logged out.");
+                    Thread.sleep(1000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
                 isLogged = false;
                 isAdmin = false;
                 break;
@@ -210,48 +209,46 @@ public class MenuClientMovie {
             default:
                 String[] requestComponents = request.split(TCProtocol.DELIMITER);
 
-                if(requestComponents[0].equals(TCProtocol.SEARCH_NAME)){
+                if (requestComponents[0].equals(TCProtocol.SEARCH_NAME)) {
                     String[] components = response.split(TCProtocol.DELIMITER);
                     displayFilm(components);
-                }
-                else if(requestComponents[0].equals(TCProtocol.SEARCH_GENRE)){
+                } else if (requestComponents[0].equals(TCProtocol.SEARCH_GENRE)) {
                     String[] components = response.split(TCProtocol.KWARG);
-                    for(String filmResponse : components){
+                    for (String filmResponse : components) {
                         String[] filmString = filmResponse.split(TCProtocol.DELIMITER);
                         displayFilm(filmString);
                     }
-                }
-                else{
-                    System.out.println("invalid request, try again");
+                } else {
+                    System.out.println("Invalid request. Please try again.");
                 }
                 break;
         }
     }
 
-    private static void handleResponseAdmin(String response){
-        switch (response){
+    private static void handleResponseAdmin(String response) {
+        switch (response) {
             case TCProtocol.ADDED:
-                System.out.println("added to the program");
+                System.out.println("Film added to the program.");
                 break;
 
             case TCProtocol.EXISTS:
-                System.out.println("that film already exists");
+                System.out.println("That film already exists.");
                 break;
 
             case TCProtocol.INSUFFICIENT:
-                System.out.println("insufficient permissions, who are you?");
+                System.out.println("Insufficient permissions.");
                 break;
 
             case TCProtocol.REMOVED:
-                System.out.println("film successfully removed");
+                System.out.println("Film successfully removed.");
                 break;
 
             case TCProtocol.NOT_FOUND:
-                System.out.println("film not found");
+                System.out.println("Film not found.");
                 break;
 
             case TCProtocol.SHUTTING_DOWN:
-                System.out.println("server shut down, SERVER SHUT DOWN");
+                System.out.println("Server shutting down.");
                 break;
 
             case TCProtocol.LOGGED_OUT:
@@ -264,12 +261,12 @@ public class MenuClientMovie {
                 break;
 
             default:
-                System.out.println("invalid request, try again");
+                System.out.println("Invalid request. Please try again.");
                 break;
         }
     }
 
-    private static void displayLanding(){
+    private static void displayLanding() {
         System.out.println("Welcome to the film program:");
         System.out.println("1. Register");
         System.out.println("2. Login");
@@ -285,7 +282,7 @@ public class MenuClientMovie {
         System.out.println("5. Logout");
     }
 
-    private static void displayAdmin(){
+    private static void displayAdmin() {
         System.out.println("1. Add a film");
         System.out.println("2. Remove a film");
         System.out.println("3. Shutdown server");
@@ -293,12 +290,12 @@ public class MenuClientMovie {
         System.out.println("5. Logout");
     }
 
-    private static void displayFilm(String[] components){
+    private static void displayFilm(String[] components) {
         System.out.println("--------------------------------");
-        System.out.println("movie title: " + components[0]);
-        System.out.println("genre: " + components[1]);
-        System.out.println("total ratings: " + components[2]);
-        System.out.println("number of ratings: " + components[3]);
+        System.out.println("Movie title: " + components[0]);
+        System.out.println("Genre: " + components[1]);
+        System.out.println("Total ratings: " + components[2]);
+        System.out.println("Number of ratings: " + components[3]);
         System.out.println("--------------------------------");
     }
 
@@ -372,11 +369,12 @@ public class MenuClientMovie {
         return TCProtocol.REMOVE + TCProtocol.DELIMITER + title;
     }
 
-    private static String shutdownServer(){
+    private static String shutdownServer() {
         return TCProtocol.SHUTDOWN;
     }
 
-    private static String exit(){
+    private static String exit() {
+        System.out.println("Exiting...");
         validSession = false;
         return TCProtocol.EXIT;
     }
