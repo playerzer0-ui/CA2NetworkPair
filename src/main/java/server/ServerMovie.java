@@ -15,6 +15,7 @@ import java.util.List;
 import java.util.Scanner;
 
 public class ServerMovie {
+    private static boolean shuttingDown = false;
     private static boolean serverOnline = true;
     private static User user;
     private static boolean validSession;
@@ -260,20 +261,20 @@ public class ServerMovie {
         }
     }
 
-    public static String shutDownServer(){
-        if(user != null){
-            if(user.isAdmin()){
+    public static String shutDownServer() {
+        if (user != null) {
+            if (user.isAdmin()) {
                 serverOnline = false;
+                shuttingDown = true;
                 validSession = false;
                 return TCProtocol.SHUTTING_DOWN;
-            }
-            else{
+            } else {
                 return TCProtocol.INSUFFICIENT;
             }
-        }
-        else{
+        } else {
             return TCProtocol.INSUFFICIENT;
         }
     }
-
 }
+
+

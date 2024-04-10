@@ -13,6 +13,7 @@ public class MenuClientMovie {
     private static boolean validSession;
     private static boolean isLogged;
     private static boolean isAdmin;
+    private static boolean shuttingDown = false;
 
     public static void main(String[] args) {
         String message;
@@ -48,6 +49,10 @@ public class MenuClientMovie {
 
                     String response = input.nextLine();
 
+                    if (response.equals(TCProtocol.SHUTTING_DOWN)) {
+                        shuttingDown = true;
+                    }
+
                     if (!isLogged) {
                         handleResponseLanding(response);
                     } else {
@@ -56,6 +61,11 @@ public class MenuClientMovie {
                         } else {
                             handleResponseAdmin(response);
                         }
+                    }
+
+                    if (shuttingDown) {
+                        System.out.println("Server is shutting down. Exiting...");
+                        break;
                     }
                 }
             }

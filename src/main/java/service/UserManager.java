@@ -2,19 +2,16 @@ package service;
 
 import business.User;
 
-import java.util.HashSet;
-import java.util.Set;
+import java.util.HashMap;
+import java.util.Map;
 
 public class UserManager {
-    private Set<User> users = new HashSet<>();
+    private Map<String, User> users = new HashMap<>();
 
-    /**
-     * a set data of admin user
-     */
     public UserManager() {
         // Adding two initial admin users
-        users.add(new User("admin1", "adminPassword1", true));
-        users.add(new User("admin2", "adminPassword2", true));
+        users.put("admin1", new User("admin1", "adminPassword1", true));
+        users.put("admin2", new User("admin2", "adminPassword2", true));
     }
 
     /**
@@ -24,7 +21,11 @@ public class UserManager {
      * @return true if the user is successfully added, false otherwise
      */
     public boolean addUser(User user) {
-        return users.add(user);
+        if (user == null || users.containsKey(user.getUsername())) {
+            return false; // User already exists or user is null
+        }
+        users.put(user.getUsername(), user);
+        return true;
     }
 
     /**
@@ -34,11 +35,6 @@ public class UserManager {
      * @return the user if found, null otherwise
      */
     public User searchByUsername(String username) {
-        for (User user : users) {
-            if (user.getUsername().equals(username)) {
-                return user;
-            }
-        }
-        return null;
+        return users.get(username);
     }
 }
