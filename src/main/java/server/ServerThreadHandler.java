@@ -15,7 +15,6 @@ import java.util.List;
 import java.util.Scanner;
 
 public class ServerThreadHandler implements Runnable{
-    public static boolean serverOnline;
     private Socket socket;
     private User user;
     private boolean validSession;
@@ -24,7 +23,6 @@ public class ServerThreadHandler implements Runnable{
 
     public ServerThreadHandler(Socket dataSocket){
         this.socket = dataSocket;
-        serverOnline = true;
         user = null;
         validSession = true;
         filmManager = new FilmManager();
@@ -264,7 +262,7 @@ public class ServerThreadHandler implements Runnable{
     public String shutDownServer() {
         if (user != null) {
             if (user.isAdmin()) {
-                serverOnline = false;
+                ServerMovie.setServerOnline(false);
                 validSession = false;
                 return TCProtocol.SHUTTING_DOWN;
             } else {
