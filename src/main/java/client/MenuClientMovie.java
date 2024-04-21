@@ -1,5 +1,6 @@
 package client;
 
+import business.User;
 import service.TCProtocol;
 
 import java.io.IOException;
@@ -326,12 +327,21 @@ public class MenuClientMovie {
     }
 
     private static String register(Scanner userInput) {
+        String request = null;
         System.out.print("Enter username: ");
         String username = userInput.nextLine();
         System.out.print("Enter password: ");
         String password = userInput.nextLine();
-        return TCProtocol.REGISTER + TCProtocol.DELIMITER + username + TCProtocol.DELIMITER + password;
+        try {
+            User user = new User(username, password);
+            request = TCProtocol.REGISTER + TCProtocol.DELIMITER + username + TCProtocol.DELIMITER + password;
+        } catch (IllegalArgumentException e) {
+            System.out.println(e.getMessage());
+            request = TCProtocol.INVALID;
+        }
+        return request;
     }
+
 
     private static String login(Scanner userInput) {
         System.out.print("Enter username: ");
