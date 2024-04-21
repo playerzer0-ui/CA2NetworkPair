@@ -15,13 +15,15 @@ import java.util.List;
 import java.util.Scanner;
 
 public class ServerThreadHandler implements Runnable{
-    private boolean serverOnline;
+    public static boolean serverOnline;
+    private Socket socket;
     private User user;
     private boolean validSession;
     private final FilmManager filmManager;
     private final UserManager userManager;
 
-    public ServerThreadHandler(){
+    public ServerThreadHandler(Socket dataSocket){
+        this.socket = dataSocket;
         serverOnline = true;
         user = null;
         validSession = true;
@@ -31,84 +33,77 @@ public class ServerThreadHandler implements Runnable{
     }
     @Override
     public void run() {
-        try(ServerSocket serverSocket = new ServerSocket(TCProtocol.PORT)){
+        try(Scanner input = new Scanner(socket.getInputStream()); PrintWriter output = new PrintWriter(socket.getOutputStream())){
 
-            while(serverOnline){
-                Socket socket = serverSocket.accept();
-                validSession = true;
-                user = null;
+            while(validSession){
+                String request = input.nextLine();
+                System.out.println(request);
+                String[] components = request.split(TCProtocol.DELIMITER);
+                String response;
 
-                try(Scanner input = new Scanner(socket.getInputStream()); PrintWriter output = new PrintWriter(socket.getOutputStream())){
+                switch (components[0]){
 
-                    while(validSession){
-                        String request = input.nextLine();
-                        System.out.println(request);
-                        String[] components = request.split(TCProtocol.DELIMITER);
-                        String response;
+                    case TCProtocol.REGISTER:
+                        response = registerCommand(components, userManager);
+                        break;
 
-                        switch (components[0]){
+                    case TCProtocol.LOGIN:
+                        response = loginCommand(components, userManager);
+                        break;
 
-                            case TCProtocol.REGISTER:
-                                response = registerCommand(components, userManager);
-                                break;
-
-                            case TCProtocol.LOGIN:
-                                response = loginCommand(components, userManager);
-                                break;
-
-                            case TCProtocol.LOGOUT:
-                                user = null;
-                                response = TCProtocol.LOGGED_OUT;
-                                break;
+                    case TCProtocol.LOGOUT:
+                        user = null;
+                        response = TCProtocol.LOGGED_OUT;
+                        break;
 
 
-                            case TCProtocol.RATE:
-                                response = rateCommand(components, filmManager);
-                                break;
+                    case TCProtocol.RATE:
+                        response = rateCommand(components, filmManager);
+                        break;
 
-                            case TCProtocol.SEARCH_NAME:
-                                response = searchFilmByName(components, filmManager);
-                                break;
+                    case TCProtocol.SEARCH_NAME:
+                        response = searchFilmByName(components, filmManager);
+                        break;
 
-                            case TCProtocol.SEARCH_GENRE:
-                                response = searchFilmByGenre(components, filmManager);
-                                break;
+                    case TCProtocol.SEARCH_GENRE:
+                        response = searchFilmByGenre(components, filmManager);
+                        break;
 
-                            case TCProtocol.ADD:
-                                response = addFilm(components, filmManager);
-                                break;
+                    case TCProtocol.ADD:
+                        response = addFilm(components, filmManager);
+                        break;
 
-                            case TCProtocol.REMOVE:
-                                response = removeFilm(components, filmManager);
-                                break;
+                    case TCProtocol.REMOVE:
+                        response = removeFilm(components, filmManager);
+                        break;
 
-                            case TCProtocol.EXIT:
-                                validSession = false;
-                                response = TCProtocol.GOODBYE;
-                                break;
+                    case TCProtocol.EXIT:
+                        validSession = false;
+                        response = TCProtocol.GOODBYE;
+                        break;
 
-                            case TCProtocol.SHUTDOWN:
-                                response = shutDownServer();
-                                break;
+                    case TCProtocol.SHUTDOWN:
+                        response = shutDownServer();
+                        break;
 
-                            default:
-                                response = TCProtocol.INVALID;
-                                break;
-                        }
-
-                        output.println(response);
-                        output.flush();
-                    }
+                    default:
+                        response = TCProtocol.INVALID;
+                        break;
                 }
+
+                output.println(response);
+                output.flush();
             }
         }
-        catch (BindException e) {
+        catch(BindException e) {
             System.out.println("BindException occurred when attempting to bind to port " + TCProtocol.PORT);
             System.out.println(e.getMessage());
-        } catch (IOException e) {
+        } catch(IOException e) {
             System.out.println("IOException occurred on server socket");
             System.out.println(e.getMessage());
         }
+
+
     }
 
     public boolean isNumber(String input) {
