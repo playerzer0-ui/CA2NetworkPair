@@ -14,17 +14,23 @@ import java.net.Socket;
 import java.util.List;
 import java.util.Scanner;
 
-public class ServerMovie {
-    private static boolean serverOnline = true;
-    private static User user;
-    private static boolean validSession;
+public class ServerThreadHandler implements Runnable{
+    private boolean serverOnline;
+    private User user;
+    private boolean validSession;
+    private final FilmManager filmManager;
+    private final UserManager userManager;
 
-    public static void main(String[] args) {
-        FilmManager filmManager = new FilmManager();
+    public ServerThreadHandler(){
+        serverOnline = true;
+        user = null;
+        validSession = true;
+        filmManager = new FilmManager();
         filmManager.setData();
-        UserManager userManager = new UserManager();
-
-        System.out.println("movie server online...");
+        userManager = new UserManager();
+    }
+    @Override
+    public void run() {
         try(ServerSocket serverSocket = new ServerSocket(TCProtocol.PORT)){
 
             while(serverOnline){
@@ -105,7 +111,7 @@ public class ServerMovie {
         }
     }
 
-    public static boolean isNumber(String input) {
+    public boolean isNumber(String input) {
         try {
             Integer.parseInt(input);
             return true;
@@ -115,7 +121,7 @@ public class ServerMovie {
         }
     }
 
-    public static String registerCommand(String[] components, UserManager userManager){
+    public String registerCommand(String[] components, UserManager userManager){
         if (components.length == 3) {
             boolean added = userManager.addUser(new User(components[1], components[2], false));
             return added ? TCProtocol.ADDED : TCProtocol.REJECTED;
@@ -124,7 +130,7 @@ public class ServerMovie {
         }
     }
 
-    public static String loginCommand(String[] components, UserManager userManager){
+    public String loginCommand(String[] components, UserManager userManager){
         if (components.length == 3) {
             User u = userManager.searchByUsername(components[1]);
             if (u != null && u.getPassword().equals(components[2])) {
@@ -138,7 +144,7 @@ public class ServerMovie {
         }
     }
 
-    public static String rateCommand(String[] components, FilmManager filmManager){
+    public String rateCommand(String[] components, FilmManager filmManager){
         if(components.length == 3){
             if(user != null){
                 if(isNumber(components[2])){
@@ -169,7 +175,7 @@ public class ServerMovie {
         }
     }
 
-    public static String searchFilmByName(String[] components, FilmManager filmManager){
+    public String searchFilmByName(String[] components, FilmManager filmManager){
         if(components.length == 2){
             Film film = filmManager.searchByTitle(components[1]);
             if(film != null){
@@ -184,7 +190,7 @@ public class ServerMovie {
         }
     }
 
-    public static String searchFilmByGenre(String[] components, FilmManager filmManager){
+    public String searchFilmByGenre(String[] components, FilmManager filmManager){
         if(components.length == 2){
             List<Film> films = filmManager.searchByGenre(components[1]);
             if(!films.isEmpty()){
@@ -210,7 +216,7 @@ public class ServerMovie {
         }
     }
 
-    public static String addFilm(String[] components, FilmManager filmManager){
+    public String addFilm(String[] components, FilmManager filmManager){
         if(components.length == 3){
             if(user != null){
                 if(user.isAdmin()){
@@ -235,7 +241,7 @@ public class ServerMovie {
         }
     }
 
-    public static String removeFilm(String[] components, FilmManager filmManager){
+    public String removeFilm(String[] components, FilmManager filmManager){
         if(components.length == 2){
             if(user != null){
                 if(user.isAdmin()){
@@ -260,7 +266,7 @@ public class ServerMovie {
         }
     }
 
-    public static String shutDownServer() {
+    public String shutDownServer() {
         if (user != null) {
             if (user.isAdmin()) {
                 serverOnline = false;
@@ -274,5 +280,3 @@ public class ServerMovie {
         }
     }
 }
-
-
