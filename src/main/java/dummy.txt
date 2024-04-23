@@ -55,6 +55,12 @@ login%%newuser%%password123
 login%%admin1%%adminPassword1
 - SUCCESS_ADMIN
 
+DISPLAY_ALL_FILM
+dark souls%%comedy%%4%%2~~spongebob%%sci-fi%%1%%10~~gold%%sci-fi%%1%%10
+
+DISPLY_ALL_FILM
+NONE
+
 logout
 - LOGGED_OUT
 
