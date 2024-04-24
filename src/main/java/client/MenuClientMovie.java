@@ -239,13 +239,14 @@ public class MenuClientMovie {
                 if (requestComponents[0].equals(TCProtocol.SEARCH_NAME)) {
                     String[] components = response.split(TCProtocol.DELIMITER);
                     displayFilm(components);
-                } else if (requestComponents[0].equals(TCProtocol.SEARCH_GENRE)) {
+                } else if (requestComponents[0].equals(TCProtocol.SEARCH_GENRE) || requestComponents[0].equals(TCProtocol.DISPLAY_ALL_FILMS)) {
                     String[] components = response.split(TCProtocol.KWARG);
                     for (String filmResponse : components) {
                         String[] filmString = filmResponse.split(TCProtocol.DELIMITER);
                         displayFilm(filmString);
                     }
-                } else {
+                }
+                else {
                     System.out.println("Invalid request. Please try again.");
                 }
                 break;

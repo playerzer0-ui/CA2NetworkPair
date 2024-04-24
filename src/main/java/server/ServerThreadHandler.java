@@ -267,7 +267,7 @@ public class ServerThreadHandler implements Runnable{
             for (Film film : films) {
                 response.append(film.toString()).append(TCProtocol.KWARG);
             }
-            if (response.length() > 0) {
+            if (!response.isEmpty()) {
                 response.setLength(response.length() - 2);
             }
             return String.valueOf(response);
