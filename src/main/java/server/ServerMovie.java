@@ -20,7 +20,7 @@ public class ServerMovie {
         filmManager.setData();
         userManager = new UserManager();
 
-        System.out.println("movie server online...");
+        System.out.println("Movie Server Online...");
         try(ServerSocket serverSocket = new ServerSocket(TCProtocol.PORT)){
 
             while(serverOnline){

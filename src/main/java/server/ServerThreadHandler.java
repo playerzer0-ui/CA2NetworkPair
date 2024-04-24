@@ -53,7 +53,6 @@ public class ServerThreadHandler implements Runnable{
                         response = TCProtocol.LOGGED_OUT;
                         break;
 
-
                     case TCProtocol.RATE:
                         response = rateCommand(components, filmManager);
                         break;
@@ -74,6 +73,10 @@ public class ServerThreadHandler implements Runnable{
                         response = removeFilm(components, filmManager);
                         break;
 
+                    case TCProtocol.DISPLAY_ALL_FILMS:
+                        response = displayAllFilmsCommand();
+                        break;
+
                     case TCProtocol.EXIT:
                         validSession = false;
                         response = TCProtocol.GOODBYE;
@@ -82,7 +85,6 @@ public class ServerThreadHandler implements Runnable{
                     case TCProtocol.SHUTDOWN:
                         response = shutDownServer();
                         break;
-
                     default:
                         response = TCProtocol.INVALID;
                         break;
@@ -99,8 +101,6 @@ public class ServerThreadHandler implements Runnable{
             System.out.println("IOException occurred on server socket");
             System.out.println(e.getMessage());
         }
-
-
     }
 
     public boolean isNumber(String input) {
@@ -255,6 +255,22 @@ public class ServerThreadHandler implements Runnable{
         }
         else{
             return TCProtocol.INVALID;
+        }
+    }
+
+    public String displayAllFilmsCommand() {
+        List<Film> films = filmManager.getFilms();
+        if (films.isEmpty()) {
+            return TCProtocol.NONE;
+        } else {
+            StringBuilder response = new StringBuilder();
+            for (Film film : films) {
+                response.append(film.toString()).append(TCProtocol.KWARG);
+            }
+            if (response.length() > 0) {
+                response.setLength(response.length() - 2);
+            }
+            return String.valueOf(response);
         }
     }
 

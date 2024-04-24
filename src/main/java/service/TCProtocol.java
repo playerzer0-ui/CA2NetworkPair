@@ -25,6 +25,8 @@ public class TCProtocol {
     public final static String NOT_LOGGED_IN = "NOT_LOGGED_IN";
 
     //FILM
+    public final static String DISPLAY_ALL_FILMS = "DISPLAY_ALL_FILMS";
+    public final static String NONE = "NONE";
     public final static String RATE = "rate";
     public final static String SEARCH_NAME = "searchByName";
     public final static String SEARCH_GENRE = "searchByGenre";

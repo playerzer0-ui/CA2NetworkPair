@@ -109,9 +109,12 @@ public class MenuClientMovie {
                 request = searchByGenre(userInput);
                 break;
             case 4:
-                request = exit();
+                request = displayAllFilms();
                 break;
             case 5:
+                request = exit();
+                break;
+            case 6:
                 request = logout();
                 break;
             default:
@@ -120,6 +123,10 @@ public class MenuClientMovie {
         }
         return request;
     }
+    private static String displayAllFilms() {
+        return TCProtocol.DISPLAY_ALL_FILMS;
+    }
+
 
     private static String generateRequestAdmin(int choice, Scanner userInput) {
         String request = null;
@@ -192,8 +199,17 @@ public class MenuClientMovie {
                 System.out.println("Invalid rating supplied.");
                 break;
 
-            case TCProtocol.NO_MATCH_FOUND:
-                System.out.println("Cannot find the title you are looking for.");
+            case TCProtocol.DISPLAY_ALL_FILMS:
+                String[] filmData = response.split(TCProtocol.KWARG);
+                for (String filmInfo : filmData) {
+                    String[] components = filmInfo.split(TCProtocol.DELIMITER);
+                    displayFilm(components);
+                }
+                break;
+
+
+            case TCProtocol.NONE:
+                System.out.println("No films found.");
                 break;
 
             case TCProtocol.NOT_LOGGED_IN:
@@ -289,9 +305,11 @@ public class MenuClientMovie {
         System.out.println("1. Rate a film");
         System.out.println("2. Search by title");
         System.out.println("3. Search by genre");
-        System.out.println("4. Exit");
-        System.out.println("5. Logout");
+        System.out.println("4. Display all films");
+        System.out.println("5. Exit");
+        System.out.println("6. Logout");
     }
+
 
     private static void displayAdmin() {
         System.out.println("1. Add a film");
