@@ -6,11 +6,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class FilmManager {
-    private List<Film> films = new ArrayList<>();
+    private final List<Film> films = new ArrayList<>();
 
-    public FilmManager(ArrayList<Film> films) {
-        this.films = films;
-    }
+//    public FilmManager(ArrayList<Film> films) {
+//        this.films = films;
+//    }
 
     public FilmManager() {
     }
@@ -41,12 +41,15 @@ public class FilmManager {
      */
     public Film searchByTitle(String title){
         Film film;
-        int found = films.indexOf(new Film(title));
-        if(found >= 0){
-            film = films.get(found);
-        }
-        else{
-            film = null;
+
+        synchronized (films){
+            int found = films.indexOf(new Film(title));
+            if(found >= 0){
+                film = films.get(found);
+            }
+            else{
+                film = null;
+            }
         }
         return film;
     }
@@ -60,9 +63,11 @@ public class FilmManager {
     public List<Film> searchByGenre(String genre){
         List<Film> filteredFilms = new ArrayList<>();
 
-        for(Film f : films){
-            if(f.getGenre().equals(genre)){
-                filteredFilms.add(f);
+        synchronized (films){
+            for(Film f : films){
+                if(f.getGenre().equals(genre)){
+                    filteredFilms.add(f);
+                }
             }
         }
 
@@ -81,9 +86,11 @@ public class FilmManager {
             return false;
         }
 
-        film.setNumRaters(film.getNumRaters() + 1);
-        film.setTotalRating(film.getTotalRating() + rating);
-        films.set(films.indexOf(film), film);
+        synchronized (films){
+            film.setNumRaters(film.getNumRaters() + 1);
+            film.setTotalRating(film.getTotalRating() + rating);
+            films.set(films.indexOf(film), film);
+        }
 
         return true;
     }
@@ -94,11 +101,14 @@ public class FilmManager {
      * @return true or false, if successful or not
      */
     public boolean addFilm(Film film){
-        if(films.contains(film)){
-            return false;
+        synchronized (films){
+            if(films.contains(film)){
+                return false;
+            }
+            else{
+                return films.add(film);
+            }
         }
-
-        return films.add(film);
     }
 
     /**
@@ -107,10 +117,13 @@ public class FilmManager {
      * @return true or false, if successful or not
      */
     public boolean removeFilm(String title){
-        if(films.isEmpty()){
-            return false;
+        synchronized (films){
+            if(films.isEmpty()){
+                return false;
+            }
+            else{
+                return films.remove(new Film(title));
+            }
         }
-
-        return films.remove(new Film(title));
     }
 }

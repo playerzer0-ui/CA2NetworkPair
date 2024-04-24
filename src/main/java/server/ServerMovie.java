@@ -1,6 +1,8 @@
 package server;
 
+import service.FilmManager;
 import service.TCProtocol;
+import service.UserManager;
 
 import java.io.IOException;
 import java.net.BindException;
@@ -9,15 +11,21 @@ import java.net.Socket;
 
 public class ServerMovie {
     private static boolean serverOnline = true;
+    private static FilmManager filmManager;
+    private static UserManager userManager;
+
 
     public static void main(String[] args) {
+        filmManager = new FilmManager();
+        filmManager.setData();
+        userManager = new UserManager();
 
         System.out.println("movie server online...");
         try(ServerSocket serverSocket = new ServerSocket(TCProtocol.PORT)){
 
             while(serverOnline){
                 Socket socket = serverSocket.accept();
-                ServerThreadHandler threadHandler = new ServerThreadHandler(socket);
+                ServerThreadHandler threadHandler = new ServerThreadHandler(socket, filmManager, userManager);
                 Thread worker = new Thread(threadHandler);
                 worker.start();
             }

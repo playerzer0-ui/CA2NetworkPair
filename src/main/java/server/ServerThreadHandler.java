@@ -15,19 +15,18 @@ import java.util.List;
 import java.util.Scanner;
 
 public class ServerThreadHandler implements Runnable{
-    private Socket socket;
+    private final Socket socket;
     private User user;
     private boolean validSession;
     private final FilmManager filmManager;
     private final UserManager userManager;
 
-    public ServerThreadHandler(Socket dataSocket){
+    public ServerThreadHandler(Socket dataSocket, FilmManager filmManager, UserManager userManager){
         this.socket = dataSocket;
         user = null;
         validSession = true;
-        filmManager = new FilmManager();
-        filmManager.setData();
-        userManager = new UserManager();
+        this.filmManager = filmManager;
+        this.userManager = userManager;
     }
     @Override
     public void run() {
